@@ -9,7 +9,7 @@ copyright:           "2022 Author name here"
 extra-source-files:
   - README.md
   - CHANGELOG.md
-  - spec/fixtures/**/*.json
+  - spec/fixtures/**/*.yaml
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -27,6 +27,7 @@ dependencies:
   - megaparsec
   - http-types
   - text
+  - time
 
 ghc-options:
   - -Wall
@@ -37,9 +38,15 @@ default-extensions:
   - BlockArguments
   - DerivingStrategies
   - DerivingVia
+  - GeneralizedNewtypeDeriving
   - LambdaCase
   - OverloadedStrings
   - PatternSynonyms
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StrictData
+  - TypeApplications
+  - TypeFamilies
 
 library:
   source-dirs: src
@@ -55,3 +62,4 @@ tests:
     dependencies:
       - reddit-types
       - hspec
+      - yaml

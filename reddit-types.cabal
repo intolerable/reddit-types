@@ -18,7 +18,8 @@ build-type:     Simple
 extra-source-files:
     README.md
     CHANGELOG.md
-    spec/fixtures/user/spez/about.json
+    spec/fixtures/user/me/about.yaml
+    spec/fixtures/user/spez/about.yaml
 
 source-repository head
   type: git
@@ -39,9 +40,15 @@ library
       BlockArguments
       DerivingStrategies
       DerivingVia
+      GeneralizedNewtypeDeriving
       LambdaCase
       OverloadedStrings
       PatternSynonyms
+      RecordWildCards
+      ScopedTypeVariables
+      StrictData
+      TypeApplications
+      TypeFamilies
   ghc-options: -Wall -Wcompat -Wextra
   build-depends:
       aeson
@@ -50,6 +57,7 @@ library
     , http-types
     , megaparsec
     , text
+    , time
   default-language: Haskell2010
 
 test-suite reddit-types-spec
@@ -66,9 +74,15 @@ test-suite reddit-types-spec
       BlockArguments
       DerivingStrategies
       DerivingVia
+      GeneralizedNewtypeDeriving
       LambdaCase
       OverloadedStrings
       PatternSynonyms
+      RecordWildCards
+      ScopedTypeVariables
+      StrictData
+      TypeApplications
+      TypeFamilies
   ghc-options: -Wall -Wcompat -Wextra -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
@@ -79,4 +93,6 @@ test-suite reddit-types-spec
     , megaparsec
     , reddit-types
     , text
+    , time
+    , yaml
   default-language: Haskell2010

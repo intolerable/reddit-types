@@ -1,7 +1,10 @@
 module Reddit.Types.Kind
   ( Kind(..)
   , HasKind(..)
+  , kindOf'
   , parseKind
+  , ensureKind
+  , ensuringKind
   , pattern Comment
   , pattern Account
   , pattern Link
@@ -21,10 +24,13 @@ newtype Kind = Kind Int
   deriving (Show, Read, Eq, Ord)
 
 instance FromJSON Kind where
-  parseJSON = withString "Kind" $ \s -> _ s
+  parseJSON = embedIntoAeson "Kind" parseKind
 
 class HasKind a where
   kindOf :: Proxy a -> Kind
+
+kindOf' :: forall a . HasKind a => a -> Kind
+kindOf' _ = kindOf (Proxy :: Proxy a)
 
 ensureKind :: Kind -> Object -> Aeson.Parser ()
 ensureKind expectedKind o = do
@@ -32,6 +38,11 @@ ensureKind expectedKind o = do
   unless (k == expectedKind) $
     Aeson.parseFail $
       "unexpected kind: got " <> show k <> ", expected " <> show expectedKind
+
+ensuringKind :: forall a . HasKind a => (Object -> Aeson.Parser a) -> Object -> Aeson.Parser a
+ensuringKind f o = do
+  ensureKind (kindOf (Proxy :: Proxy a)) o
+  f o
 
 parseKind :: Parser Kind
 parseKind = label "kind" do
