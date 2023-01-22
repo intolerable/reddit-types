@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -18,8 +18,13 @@ build-type:     Simple
 extra-source-files:
     README.md
     CHANGELOG.md
-    spec/fixtures/user/me/about.yaml
-    spec/fixtures/user/spez/about.yaml
+    spec/fixtures/authenticated/comments/100psr2.yaml
+    spec/fixtures/authenticated/user/me/about.yaml
+    spec/fixtures/authenticated/user/spez/about.yaml
+    spec/fixtures/mod/comments/101em2r.yaml
+    spec/fixtures/mod/comments/101n26z.yaml
+    spec/fixtures/mod/comments/3cap13.yaml
+    spec/fixtures/unauthenticated/comments/101hxty.yaml
 
 source-repository head
   type: git
@@ -27,9 +32,21 @@ source-repository head
 
 library
   exposed-modules:
+      Reddit.API
+      Reddit.API.UserAgent
+      Reddit.Types.Author
+      Reddit.Types.Comment
+      Reddit.Types.Controversiality
+      Reddit.Types.ExtraFields
       Reddit.Types.Kind
+      Reddit.Types.Listing
+      Reddit.Types.OneOf
       Reddit.Types.Parser
+      Reddit.Types.Post
+      Reddit.Types.Report
       Reddit.Types.Scope
+      Reddit.Types.Score
+      Reddit.Types.Subreddit
       Reddit.Types.Thing
       Reddit.Types.User
   other-modules:
@@ -38,24 +55,39 @@ library
       src
   default-extensions:
       BlockArguments
+      DataKinds
+      DeriveGeneric
       DerivingStrategies
       DerivingVia
+      DuplicateRecordFields
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
       GeneralizedNewtypeDeriving
+      ImportQualifiedPost
       LambdaCase
+      MultiParamTypeClasses
       OverloadedStrings
       PatternSynonyms
       RecordWildCards
       ScopedTypeVariables
+      StandaloneDeriving
       StrictData
       TypeApplications
       TypeFamilies
-  ghc-options: -Wall -Wcompat -Wextra
+      TypeOperators
+      UndecidableInstances
+  ghc-options: -Wall -Wcompat -Wextra -fno-warn-orphans
   build-depends:
       aeson
     , base >=4.7 && <5
     , case-insensitive
+    , data-diverse
+    , fmt
     , http-types
     , megaparsec
+    , servant
+    , servant-client
     , text
     , time
   default-language: Haskell2010
@@ -64,34 +96,56 @@ test-suite reddit-types-spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Reddit.API.UserAgentSpec
       Reddit.Fixtures
+      Reddit.Types.CommentSpec
       Reddit.Types.KindSpec
+      Reddit.Types.OneOfSpec
+      Reddit.Types.PostSpec
       Reddit.Types.UserSpec
+      SpecHelpers
       Paths_reddit_types
   hs-source-dirs:
       spec
   default-extensions:
       BlockArguments
+      DataKinds
+      DeriveGeneric
       DerivingStrategies
       DerivingVia
+      DuplicateRecordFields
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
       GeneralizedNewtypeDeriving
+      ImportQualifiedPost
       LambdaCase
+      MultiParamTypeClasses
       OverloadedStrings
       PatternSynonyms
       RecordWildCards
       ScopedTypeVariables
+      StandaloneDeriving
       StrictData
       TypeApplications
       TypeFamilies
-  ghc-options: -Wall -Wcompat -Wextra -threaded -rtsopts -with-rtsopts=-N
+      TypeOperators
+      UndecidableInstances
+  ghc-options: -Wall -Wcompat -Wextra -fno-warn-orphans -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      hspec-discover:hspec-discover
   build-depends:
       aeson
     , base >=4.7 && <5
     , case-insensitive
+    , data-diverse
+    , fmt
     , hspec
     , http-types
     , megaparsec
     , reddit-types
+    , servant
+    , servant-client
     , text
     , time
     , yaml

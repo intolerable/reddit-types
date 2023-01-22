@@ -24,8 +24,12 @@ dependencies:
   - base >= 4.7 && < 5
   - aeson
   - case-insensitive
+  - data-diverse
+  - fmt
   - megaparsec
   - http-types
+  - servant
+  - servant-client
   - text
   - time
 
@@ -33,20 +37,32 @@ ghc-options:
   - -Wall
   - -Wcompat
   - -Wextra
+  - -fno-warn-orphans
 
 default-extensions:
   - BlockArguments
+  - DataKinds
+  - DeriveGeneric
   - DerivingStrategies
   - DerivingVia
+  - DuplicateRecordFields
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
   - GeneralizedNewtypeDeriving
+  - ImportQualifiedPost
   - LambdaCase
+  - MultiParamTypeClasses
   - OverloadedStrings
   - PatternSynonyms
   - RecordWildCards
   - ScopedTypeVariables
+  - StandaloneDeriving
   - StrictData
   - TypeApplications
   - TypeFamilies
+  - TypeOperators
+  - UndecidableInstances
 
 library:
   source-dirs: src
@@ -59,7 +75,10 @@ tests:
       - -threaded
       - -rtsopts
       - -with-rtsopts=-N
+    build-tools:
+      - hspec-discover
     dependencies:
       - reddit-types
       - hspec
+      # - hspec-core
       - yaml

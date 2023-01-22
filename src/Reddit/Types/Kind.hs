@@ -1,33 +1,55 @@
 module Reddit.Types.Kind
   ( Kind(..)
   , HasKind(..)
+  , Proxy(..)
+  , kindOf
   , kindOf'
   , parseKind
   , ensureKind
   , ensuringKind
-  , pattern Comment
-  , pattern Account
-  , pattern Link
-  , pattern Message
-  , pattern Subreddit
-  , pattern Award
+  , withDataObject
   ) where
 
 import Reddit.Types.Parser
 
-import Data.Aeson (FromJSON, Object, (.:))
 import Control.Monad
+import Data.Aeson (FromJSON, Object, (.:))
+import Data.Functor
 import Data.Proxy
-import qualified Data.Aeson.Types as Aeson
+import GHC.Generics
+import Data.Aeson.Types qualified as Aeson
 
-newtype Kind = Kind Int
-  deriving (Show, Read, Eq, Ord)
+data Kind
+  = ListingKind
+  | MoreKind
+  | CommentKind
+  | AccountKind
+  | LinkKind
+  | MessageKind
+  | SubredditKind
+  | AwardKind
+  deriving (Show, Read, Eq, Ord, Generic)
+
+class KnownKind (k :: Kind) where
+  kindVal :: Proxy k -> Kind
+
+instance KnownKind 'ListingKind where kindVal Proxy = ListingKind
+instance KnownKind 'MoreKind where kindVal Proxy = MoreKind
+instance KnownKind 'CommentKind where kindVal Proxy = CommentKind
+instance KnownKind 'AccountKind where kindVal Proxy = AccountKind
+instance KnownKind 'LinkKind where kindVal Proxy = LinkKind
+instance KnownKind 'MessageKind where kindVal Proxy = MessageKind
+instance KnownKind 'SubredditKind where kindVal Proxy = SubredditKind
+instance KnownKind 'AwardKind where kindVal Proxy = AwardKind
 
 instance FromJSON Kind where
   parseJSON = embedIntoAeson "Kind" parseKind
 
-class HasKind a where
-  kindOf :: Proxy a -> Kind
+class KnownKind (KindOf a) => HasKind a where
+  type KindOf a :: Kind
+
+kindOf :: forall a . HasKind a => Proxy a -> Kind
+kindOf Proxy = kindVal (Proxy :: Proxy (KindOf a))
 
 kindOf' :: forall a . HasKind a => a -> Kind
 kindOf' _ = kindOf (Proxy :: Proxy a)
@@ -44,31 +66,23 @@ ensuringKind f o = do
   ensureKind (kindOf (Proxy :: Proxy a)) o
   f o
 
+withDataObject :: HasKind a
+               => String
+               -> (Object -> Aeson.Parser a)
+               -> Aeson.Value
+               -> Aeson.Parser a
+withDataObject s p =
+  Aeson.withObject s $ ensuringKind $ \o -> do
+    p =<< (o .: "data")
+
 parseKind :: Parser Kind
-parseKind = label "kind" do
-  void "t"
-  d <- decimal <?> "decimal"
-  guard (d `elem` knownKinds) <?> "knownKinds"
-  pure $ Kind d
-
-knownKinds :: [Int]
-knownKinds = [1,2,3,4,5,6]
-
-pattern Comment :: Kind
-pattern Comment = Kind 1
-
-pattern Account :: Kind
-pattern Account = Kind 2
-
-pattern Link :: Kind
-pattern Link = Kind 3
-
-pattern Message :: Kind
-pattern Message = Kind 4
-
-pattern Subreddit :: Kind
-pattern Subreddit = Kind 5
-
-pattern Award :: Kind
-pattern Award = Kind 6
-
+parseKind = label "kind" $ choice
+  [ "Listing" $> ListingKind
+  , "more" $> MoreKind
+  , "t1" $> CommentKind
+  , "t2" $> AccountKind
+  , "t3" $> LinkKind
+  , "t4" $> MessageKind
+  , "t5" $> SubredditKind
+  , "t6" $> AwardKind
+  ]
